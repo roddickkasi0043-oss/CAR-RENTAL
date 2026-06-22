@@ -11,12 +11,8 @@ TESTING TO BUILD A CAR RENTAL
 
 | # | Name | Student ID | University |
 |---|------|-----------|-----------|
-| 1 | MARCONI PERES ANAK LABANG | BI25110125 | UMS |
-| 2 | RODDICK BALAI ANAK KASI | BI25110174 | UMS |
-| 3 | AKEEF NUQMAN BIN SHAMSUL KHAMAR | BI25110444 | UMS |
-| 4 | JOEWE JEFFREADER JOHAN | BI25110497 | UMS |
-| 5 | MUHAMMAD SAFWAN BIN ANAS | BI25160577 | UMS |
-| 6 | MOHAMMAD AIMAN BIN MOHD TAIB | BI25160549 | UMS |
+| 1 | RODDICK BALAI ANAK KASI | BI25110174 | UMS |
+
 
 **Institution:** Universiti Malaysia Sabah  
 **Project Type:** Educational Web Application  
