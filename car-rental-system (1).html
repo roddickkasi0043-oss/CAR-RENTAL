@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DriveEase — Car Rental System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0a1628;
+    --navy-light: #162040;
+    --gold: #e8a020;
+    --gold-dark: #c4861a;
+    --white: #ffffff;
+    --off-white: #f7f5f0;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+    --red: #dc2626;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --shadow: 0 4px 24px rgba(10,22,40,0.10);
+    --shadow-lg: 0 8px 40px rgba(10,22,40,0.16);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--off-white);
+    color: var(--gray-800);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── NAV ── */
+  nav {
+    background: var(--navy);
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 64px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .logo { font-family: 'Playfair Display', serif; color: var(--gold); font-size: 1.5rem; letter-spacing: -0.02em; }
+  .logo span { color: var(--white); }
+  .nav-links { display: flex; gap: 0.25rem; }
+  .nav-links a {
+    color: rgba(255,255,255,0.75); text-decoration: none; font-size: 0.875rem;
+    padding: 0.5rem 1rem; border-radius: 6px; transition: all 0.2s; cursor: pointer;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--white); background: rgba(255,255,255,0.1); }
+  .nav-cta {
+    background: var(--gold); color: var(--navy); font-weight: 600; font-size: 0.875rem;
+    padding: 0.5rem 1.25rem; border: none; border-radius: 6px; cursor: pointer; transition: background 0.2s;
+  }
+  .nav-cta:hover { background: var(--gold-dark); }
+
+  /* ── PAGES ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 60%, #1e3a6e 100%);
+    color: var(--white);
+    padding: 5rem 2.5rem 4rem;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-badge {
+    display: inline-block; background: rgba(232,160,32,0.2); color: var(--gold);
+    border: 1px solid rgba(232,160,32,0.4); border-radius: 100px;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.35rem 1rem; margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    line-height: 1.15; margin-bottom: 1.25rem;
+  }
+  .hero h1 span { color: var(--gold); }
+  .hero p { color: rgba(255,255,255,0.7); max-width: 560px; margin: 0 auto 2.5rem; font-size: 1.05rem; }
+  .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--gold); color: var(--navy); font-weight: 700; font-size: 0.9rem;
+    padding: 0.8rem 2rem; border: none; border-radius: var(--radius-sm);
+    cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block;
+  }
+  .btn-primary:hover { background: var(--gold-dark); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,160,32,0.35); }
+  .btn-outline {
+    background: transparent; color: var(--white); font-weight: 600; font-size: 0.9rem;
+    padding: 0.8rem 2rem; border: 1.5px solid rgba(255,255,255,0.4); border-radius: var(--radius-sm);
+    cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block;
+  }
+  .btn-outline:hover { border-color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.08); }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: var(--white); border-bottom: 1px solid var(--gray-200);
+    display: flex; justify-content: center; gap: 0;
+  }
+  .stat-item {
+    flex: 1; max-width: 200px; text-align: center;
+    padding: 1.5rem 1rem; border-right: 1px solid var(--gray-200);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num { font-size: 1.75rem; font-weight: 700; color: var(--navy); }
+  .stat-label { font-size: 0.78rem; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.2rem; }
+
+  /* ── SEARCH BOX ── */
+  .search-section { padding: 2.5rem; max-width: 1100px; margin: 0 auto; }
+  .search-box {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow-lg); padding: 1.75rem 2rem; margin-top: -3rem; position: relative; z-index: 10;
+  }
+  .search-box h2 { font-size: 1.05rem; font-weight: 600; margin-bottom: 1.25rem; color: var(--navy); }
+  .search-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap: 1rem; align-items: end; }
+  .form-group label { display: block; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-400); margin-bottom: 0.4rem; }
+  .form-group input, .form-group select {
+    width: 100%; padding: 0.7rem 1rem; border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm); font-size: 0.9rem; font-family: inherit;
+    color: var(--gray-800); background: var(--gray-50); transition: border 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--gold); background: var(--white); }
+  .search-btn {
+    background: var(--navy); color: var(--white); font-weight: 700; font-size: 0.9rem;
+    padding: 0.7rem 1.75rem; border: none; border-radius: var(--radius-sm); cursor: pointer;
+    white-space: nowrap; transition: background 0.2s; height: fit-content;
+  }
+  .search-btn:hover { background: #1a2f55; }
+
+  /* ── SECTION ── */
+  .section { padding: 3rem 2.5rem; max-width: 1100px; margin: 0 auto; }
+  .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.75rem; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 1.75rem; color: var(--navy); }
+  .section-subtitle { color: var(--gray-400); font-size: 0.875rem; margin-top: 0.25rem; }
+  .see-all { color: var(--gold-dark); font-size: 0.875rem; font-weight: 600; cursor: pointer; text-decoration: none; border: none; background: none; }
+  .see-all:hover { text-decoration: underline; }
+
+  /* ── CAR CARDS ── */
+  .cars-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+  .car-card {
+    background: var(--white); border-radius: var(--radius); overflow: hidden;
+    border: 1px solid var(--gray-200); transition: all 0.25s; cursor: pointer;
+  }
+  .car-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: transparent; }
+  .car-img {
+    width: 100%; height: 180px; object-fit: cover;
+    background: linear-gradient(135deg, #e8edf5, #c8d3e8);
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .car-svg { font-size: 4rem; }
+  .car-badge {
+    position: absolute; top: 0.75rem; left: 0.75rem;
+    background: var(--navy); color: var(--white);
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 0.25rem 0.6rem; border-radius: 4px;
+  }
+  .car-badge.available { background: var(--green); }
+  .car-badge.rented { background: var(--red); }
+  .car-body { padding: 1.25rem; }
+  .car-name { font-weight: 700; font-size: 1rem; color: var(--navy); }
+  .car-type { font-size: 0.78rem; color: var(--gray-400); margin-bottom: 0.75rem; }
+  .car-specs {
+    display: flex; gap: 1rem; margin-bottom: 1rem;
+    padding-bottom: 1rem; border-bottom: 1px solid var(--gray-100);
+  }
+  .spec { display: flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; color: var(--gray-600); }
+  .spec-icon { font-size: 0.9rem; }
+  .car-footer { display: flex; align-items: center; justify-content: space-between; }
+  .car-price { }
+  .car-price .amount { font-size: 1.4rem; font-weight: 700; color: var(--navy); }
+  .car-price .per { font-size: 0.78rem; color: var(--gray-400); }
+  .rent-btn {
+    background: var(--gold); color: var(--navy); font-weight: 700; font-size: 0.82rem;
+    padding: 0.5rem 1.1rem; border: none; border-radius: 6px; cursor: pointer; transition: all 0.2s;
+  }
+  .rent-btn:hover { background: var(--gold-dark); }
+  .rent-btn:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; }
+
+  /* ── CATEGORIES ── */
+  .categories { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .cat-btn {
+    padding: 0.45rem 1rem; border: 1.5px solid var(--gray-200); background: var(--white);
+    border-radius: 100px; font-size: 0.82rem; font-weight: 500; cursor: pointer; transition: all 0.2s;
+    color: var(--gray-600);
+  }
+  .cat-btn:hover, .cat-btn.active { background: var(--navy); border-color: var(--navy); color: var(--white); }
+
+  /* ── BOOKING PAGE ── */
+  .booking-layout { display: grid; grid-template-columns: 1fr 380px; gap: 2rem; align-items: start; }
+  .booking-form-card {
+    background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 2rem; border: 1px solid var(--gray-200);
+  }
+  .booking-form-card h2 { font-size: 1.2rem; font-weight: 700; color: var(--navy); margin-bottom: 1.5rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .form-group { margin-bottom: 1rem; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 0.7rem 1rem; border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm); font-size: 0.9rem; font-family: inherit;
+    color: var(--gray-800); background: var(--gray-50); transition: border 0.2s;
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--gold); background: var(--white); }
+
+  .booking-summary {
+    background: var(--navy); border-radius: var(--radius); color: var(--white); padding: 1.75rem; position: sticky; top: 80px;
+  }
+  .booking-summary h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--gold); }
+  .summary-car { display: flex; gap: 1rem; margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .summary-car-img { width: 80px; height: 60px; background: rgba(255,255,255,0.08); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2rem; flex-shrink: 0; }
+  .summary-car-info .name { font-weight: 700; font-size: 0.95rem; }
+  .summary-car-info .type { font-size: 0.78rem; color: rgba(255,255,255,0.5); }
+  .summary-line { display: flex; justify-content: space-between; margin-bottom: 0.6rem; font-size: 0.875rem; }
+  .summary-line .label { color: rgba(255,255,255,0.6); }
+  .summary-total { border-top: 1px solid rgba(255,255,255,0.15); margin-top: 1rem; padding-top: 1rem; display: flex; justify-content: space-between; align-items: center; }
+  .summary-total .label { font-weight: 600; }
+  .summary-total .amount { font-size: 1.5rem; font-weight: 700; color: var(--gold); }
+  .confirm-btn {
+    width: 100%; background: var(--gold); color: var(--navy); font-weight: 700; font-size: 0.95rem;
+    padding: 0.9rem; border: none; border-radius: var(--radius-sm); cursor: pointer; margin-top: 1.25rem;
+    transition: background 0.2s;
+  }
+  .confirm-btn:hover { background: var(--gold-dark); }
+
+  /* ── MY BOOKINGS ── */
+  .bookings-table { width: 100%; border-collapse: collapse; background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+  .bookings-table th {
+    background: var(--navy); color: rgba(255,255,255,0.8); font-size: 0.75rem;
+    text-transform: uppercase; letter-spacing: 0.06em; padding: 0.9rem 1.25rem; text-align: left; font-weight: 600;
+  }
+  .bookings-table td { padding: 1rem 1.25rem; border-bottom: 1px solid var(--gray-100); font-size: 0.875rem; }
+  .bookings-table tr:last-child td { border-bottom: none; }
+  .bookings-table tr:hover td { background: var(--gray-50); }
+  .status-badge {
+    display: inline-block; padding: 0.25rem 0.7rem; border-radius: 100px;
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .status-badge.active { background: var(--green-light); color: var(--green); }
+  .status-badge.completed { background: var(--gray-100); color: var(--gray-600); }
+  .status-badge.pending { background: #fef9c3; color: #854d0e; }
+  .status-badge.cancelled { background: #fee2e2; color: var(--red); }
+  .action-btn {
+    padding: 0.3rem 0.8rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600;
+    cursor: pointer; border: 1.5px solid; transition: all 0.2s;
+  }
+  .action-btn.cancel { border-color: #fca5a5; color: var(--red); background: transparent; }
+  .action-btn.cancel:hover { background: #fee2e2; }
+  .action-btn.view { border-color: var(--gray-200); color: var(--gray-600); background: transparent; }
+  .action-btn.view:hover { background: var(--gray-100); }
+
+  /* ── ABOUT / HOW IT WORKS ── */
+  .how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+  .how-card { text-align: center; padding: 2rem 1.5rem; }
+  .how-num {
+    width: 48px; height: 48px; background: var(--navy); color: var(--gold);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1.1rem; margin: 0 auto 1rem;
+  }
+  .how-card h3 { font-size: 0.95rem; font-weight: 700; color: var(--navy); margin-bottom: 0.5rem; }
+  .how-card p { font-size: 0.85rem; color: var(--gray-600); line-height: 1.6; }
+
+  /* ── ADMIN ── */
+  .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .admin-stat {
+    background: var(--white); border-radius: var(--radius); padding: 1.25rem 1.5rem;
+    border: 1px solid var(--gray-200); box-shadow: var(--shadow);
+  }
+  .admin-stat .label { font-size: 0.78rem; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; }
+  .admin-stat .value { font-size: 2rem; font-weight: 700; color: var(--navy); margin-top: 0.25rem; }
+  .admin-stat .sub { font-size: 0.78rem; color: var(--green); margin-top: 0.15rem; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(10,22,40,0.7); z-index: 1000;
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+  }
+  .modal-overlay.hidden { display: none; }
+  .modal {
+    background: var(--white); border-radius: var(--radius); padding: 2rem;
+    width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+  .modal-header h2 { font-size: 1.2rem; font-weight: 700; color: var(--navy); }
+  .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-400); line-height: 1; }
+  .modal-close:hover { color: var(--gray-800); }
+  .success-icon { text-align: center; font-size: 3.5rem; margin-bottom: 1rem; }
+  .success-msg { text-align: center; }
+  .success-msg h2 { color: var(--navy); margin-bottom: 0.5rem; }
+  .success-msg p { color: var(--gray-600); font-size: 0.875rem; }
+  .booking-ref { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 1rem; margin: 1rem 0; text-align: center; }
+  .booking-ref .ref { font-size: 1.25rem; font-weight: 700; color: var(--navy); letter-spacing: 0.1em; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--navy); color: rgba(255,255,255,0.6); text-align: center;
+    padding: 2rem; font-size: 0.82rem; margin-top: 3rem;
+  }
+  footer strong { color: var(--gold); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 2rem; right: 2rem; background: var(--navy); color: var(--white);
+    padding: 0.8rem 1.5rem; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 500;
+    box-shadow: var(--shadow-lg); z-index: 9999; transform: translateY(100px); opacity: 0;
+    transition: all 0.3s; border-left: 4px solid var(--gold);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .search-grid { grid-template-columns: 1fr 1fr; }
+    .booking-layout { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--gray-200); }
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+    .section { padding: 2rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" style="display:flex; align-items:center; gap:0.5rem;">
+    <svg width="32" height="32" viewBox="0 0 100 100" style="flex-shrink:0;">
+      <defs>
+        <linearGradient id="umsGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#003d7a;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#e8a020;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="50" r="48" fill="url(#umsGrad)" stroke="#fff" stroke-width="2"/>
+      <text x="50" y="45" font-size="24" font-weight="700" text-anchor="middle" fill="#fff" font-family="Arial">U</text>
+      <text x="50" y="65" font-size="12" font-weight="600" text-anchor="middle" fill="#e8a020" font-family="Arial">UMS</text>
+    </svg>
+    <span>DriveEase</span>
+  </div>
+  <div class="nav-links">
+    <a onclick="showPage('home')" class="active" id="nav-home">Home</a>
+    <a onclick="showPage('cars')" id="nav-cars">Browse Cars</a>
+    <a onclick="showPage('bookings')" id="nav-bookings">My Bookings</a>
+    <a onclick="showPage('admin')" id="nav-admin">Admin</a>
+    <a onclick="showPage('about')" id="nav-about">About</a>
+  </div>
+  <button class="nav-cta" onclick="showPage('cars')">Rent a Car</button>
+</nav>
+
+<!-- ═══════════════════════ HOME PAGE ═══════════════════════ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-badge">🚗 Premium Car Rental Service</div>
+    <h1>Drive Your <span>Perfect Journey</span><br>Across Sabah & Labuan</h1>
+    <p>Choose from our premium fleet of well-maintained vehicles available across Sabah and Labuan. Affordable rates, flexible booking, and 24/7 support — all in one place.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="showPage('cars')">Browse Our Fleet</button>
+      <button class="btn-outline" onclick="showPage('about')">How It Works</button>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num">85+</div><div class="stat-label">Vehicles</div></div>
+    <div class="stat-item"><div class="stat-num">2,400+</div><div class="stat-label">Happy Clients</div></div>
+    <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">Sabah Locations</div></div>
+    <div class="stat-item"><div class="stat-num">99%</div><div class="stat-label">Satisfaction</div></div>
+  </div>
+
+  <!-- Quick Search -->
+  <div class="search-section">
+    <div class="search-box">
+      <h2>Quick Search</h2>
+      <div class="search-grid">
+        <div class="form-group">
+          <label>Pick-up Location</label>
+          <select id="hs-location">
+            <option>Kota Kinabalu City Centre</option>
+            <option>Sandakan</option>
+            <option>Tawau</option>
+            <option>Lahad Datu</option>
+            <option>Labuan Federal Territory</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Pick-up Date</label>
+          <input type="date" id="hs-pickup">
+        </div>
+        <div class="form-group">
+          <label>Return Date</label>
+          <input type="date" id="hs-return">
+        </div>
+        <div class="form-group">
+          <label>Car Type</label>
+          <select id="hs-type">
+            <option value="">Any Type</option>
+            <option>Economy</option>
+            <option>Sedan</option>
+            <option>SUV</option>
+            <option>Luxury</option>
+            <option>MPV</option>
+          </select>
+        </div>
+        <button class="search-btn" onclick="handleSearch()">Search</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured Cars -->
+  <div class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Featured Vehicles</div>
+        <div class="section-subtitle">Premium rentals across Sabah & Labuan</div>
+      </div>
+      <button class="see-all" onclick="showPage('cars')">View all →</button>
+    </div>
+    <div class="cars-grid" id="featured-cars"></div>
+  </div>
+
+  <!-- How it works preview -->
+  <div class="section" style="background:var(--white); border-radius:var(--radius); margin-top: -1rem; padding: 2.5rem;">
+    <div class="section-header">
+      <div><div class="section-title">How It Works</div></div>
+    </div>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-num">1</div>
+        <h3>Choose Your Car</h3>
+        <p>Browse our wide selection of economy, sedan, SUV, luxury, and MPV vehicles across Sabah & Labuan.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">2</div>
+        <h3>Book Online</h3>
+        <p>Select your dates, pick-up location, and add-ons. Confirm in minutes.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">3</div>
+        <h3>Pick It Up</h3>
+        <p>Arrive at the branch with your booking reference and valid driving licence.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">4</div>
+        <h3>Return & Done</h3>
+        <p>Return the car to any of our 5 locations. Simple drop-off, no hidden fees.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ CARS PAGE ═══════════════════════ -->
+<div id="page-cars" class="page">
+  <div style="background:var(--navy); padding: 2.5rem; color:var(--white);">
+    <div style="max-width:1100px; margin:0 auto;">
+      <h1 style="font-family:'Playfair Display',serif; font-size:2rem;">Our Vehicle Fleet</h1>
+      <p style="color:rgba(255,255,255,0.6); margin-top:0.5rem;">85+ well-maintained vehicles ready to go across Sabah & Labuan</p>
+    </div>
+  </div>
+  <div class="section">
+    <div class="categories" id="car-categories">
+      <button class="cat-btn active" onclick="filterCars('All', this)">All</button>
+      <button class="cat-btn" onclick="filterCars('Economy', this)">Economy</button>
+      <button class="cat-btn" onclick="filterCars('Sedan', this)">Sedan</button>
+      <button class="cat-btn" onclick="filterCars('SUV', this)">SUV</button>
+      <button class="cat-btn" onclick="filterCars('Luxury', this)">Luxury</button>
+      <button class="cat-btn" onclick="filterCars('MPV', this)">MPV</button>
+    </div>
+    <div class="cars-grid" id="all-cars-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ BOOKING PAGE ═══════════════════════ -->
+<div id="page-booking" class="page">
+  <div style="background:var(--navy); padding: 2.5rem; color:var(--white);">
+    <div style="max-width:1100px; margin:0 auto;">
+      <button onclick="showPage('cars')" style="background:none;border:none;color:rgba(255,255,255,0.6);cursor:pointer;margin-bottom:0.75rem;font-size:0.875rem;">← Back to Cars</button>
+      <h1 style="font-family:'Playfair Display',serif; font-size:2rem;">Complete Your Booking</h1>
+    </div>
+  </div>
+  <div class="section">
+    <div class="booking-layout">
+      <div class="booking-form-card">
+        <h2>Driver Details</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="b-fname" placeholder="Ahmad">
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="b-lname" placeholder="Rizwan">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="b-email" placeholder="ahmad@email.com">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="b-phone" placeholder="+60 12-345 6789">
+          </div>
+          <div class="form-group">
+            <label>IC / Passport No.</label>
+            <input type="text" id="b-ic" placeholder="900101-10-1234">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Driving Licence No.</label>
+          <input type="text" id="b-licence" placeholder="D1234567">
+        </div>
+
+        <h2 style="margin-top:1.5rem; margin-bottom:1rem;">Rental Details</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Pick-up Date</label>
+            <input type="date" id="b-pickup">
+          </div>
+          <div class="form-group">
+            <label>Return Date</label>
+            <input type="date" id="b-return">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Pick-up Location</label>
+          <select id="b-location">
+            <option>Kota Kinabalu City Centre</option>
+            <option>Sandakan</option>
+            <option>Tawau</option>
+            <option>Lahad Datu</option>
+            <option>Labuan Federal Territory</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Additional Requests (optional)</label>
+          <textarea id="b-notes" placeholder="Child seat, GPS, early pick-up, etc."></textarea>
+        </div>
+
+        <h2 style="margin-top:1.5rem; margin-bottom:1rem;">Add-ons</h2>
+        <div style="display:grid; gap:0.75rem;">
+          <label style="display:flex; gap:0.75rem; align-items:center; padding:0.85rem 1rem; border:1.5px solid var(--gray-200); border-radius:var(--radius-sm); cursor:pointer;">
+            <input type="checkbox" id="addon-gps" style="width:auto;" onchange="updateSummary()">
+            <span style="flex:1; font-size:0.875rem;"><strong>GPS Navigation</strong><br><span style="color:var(--gray-400); font-size:0.8rem;">Turn-by-turn navigation device</span></span>
+            <span style="font-weight:700; color:var(--navy);">+RM15/day</span>
+          </label>
+          <label style="display:flex; gap:0.75rem; align-items:center; padding:0.85rem 1rem; border:1.5px solid var(--gray-200); border-radius:var(--radius-sm); cursor:pointer;">
+            <input type="checkbox" id="addon-seat" style="width:auto;" onchange="updateSummary()">
+            <span style="flex:1; font-size:0.875rem;"><strong>Child Safety Seat</strong><br><span style="color:var(--gray-400); font-size:0.8rem;">Approved infant / toddler seat</span></span>
+            <span style="font-weight:700; color:var(--navy);">+RM20/day</span>
+          </label>
+          <label style="display:flex; gap:0.75rem; align-items:center; padding:0.85rem 1rem; border:1.5px solid var(--gray-200); border-radius:var(--radius-sm); cursor:pointer;">
+            <input type="checkbox" id="addon-insurance" style="width:auto;" onchange="updateSummary()">
+            <span style="flex:1; font-size:0.875rem;"><strong>Full Insurance Cover</strong><br><span style="color:var(--gray-400); font-size:0.8rem;">Zero-excess comprehensive cover</span></span>
+            <span style="font-weight:700; color:var(--navy);">+RM35/day</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="booking-summary">
+        <h3>Booking Summary</h3>
+        <div class="summary-car">
+          <div class="summary-car-img" id="b-car-emoji">🚗</div>
+          <div class="summary-car-info">
+            <div class="name" id="b-car-name">Select a car</div>
+            <div class="type" id="b-car-type">—</div>
+          </div>
+        </div>
+        <div class="summary-line"><span class="label">Rate</span><span id="b-rate">RM0/day</span></div>
+        <div class="summary-line"><span class="label">Duration</span><span id="b-duration">0 days</span></div>
+        <div class="summary-line"><span class="label">Car Rental</span><span id="b-subtotal">RM0</span></div>
+        <div class="summary-line"><span class="label">Add-ons</span><span id="b-addons">RM0</span></div>
+        <div class="summary-line"><span class="label">SST (8%)</span><span id="b-tax">RM0</span></div>
+        <div class="summary-total">
+          <span class="label">Total</span>
+          <span class="amount" id="b-total">RM0</span>
+        </div>
+        <button class="confirm-btn" onclick="confirmBooking()">Confirm Booking</button>
+        <p style="text-align:center; font-size:0.72rem; color:rgba(255,255,255,0.4); margin-top:0.75rem;">No payment required now. Pay at pick-up.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ MY BOOKINGS PAGE ═══════════════════════ -->
+<div id="page-bookings" class="page">
+  <div style="background:var(--navy); padding: 2.5rem; color:var(--white);">
+    <div style="max-width:1100px; margin:0 auto;">
+      <h1 style="font-family:'Playfair Display',serif; font-size:2rem;">My Bookings</h1>
+      <p style="color:rgba(255,255,255,0.6); margin-top:0.5rem;">Track and manage your car rental history</p>
+    </div>
+  </div>
+  <div class="section">
+    <div style="overflow-x:auto;">
+      <table class="bookings-table" id="bookings-table">
+        <thead>
+          <tr>
+            <th>Ref #</th>
+            <th>Car</th>
+            <th>Pick-up</th>
+            <th>Return</th>
+            <th>Days</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bookings-body"></tbody>
+      </table>
+      <div id="no-bookings" style="text-align:center; padding:4rem; color:var(--gray-400);">
+        <div style="font-size:3rem; margin-bottom:1rem;">📋</div>
+        <div style="font-size:1.1rem; font-weight:600; color:var(--gray-600); margin-bottom:0.5rem;">No bookings yet</div>
+        <div style="font-size:0.875rem;">Browse our fleet and make your first booking!</div>
+        <button class="btn-primary" onclick="showPage('cars')" style="margin-top:1.25rem;">Browse Cars</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ADMIN PAGE ═══════════════════════ -->
+<div id="page-admin" class="page">
+  <div style="background:var(--navy); padding: 2.5rem; color:var(--white);">
+    <div style="max-width:1100px; margin:0 auto;">
+      <h1 style="font-family:'Playfair Display',serif; font-size:2rem;">Admin Dashboard</h1>
+      <p style="color:rgba(255,255,255,0.6); margin-top:0.5rem;">Fleet & booking management for Sabah & Labuan operations</p>
+    </div>
+  </div>
+  <div class="section">
+    <div class="admin-grid" id="admin-stats"></div>
+    <div class="section-header" style="margin-top:1rem;">
+      <div class="section-title" style="font-size:1.2rem;">All Bookings</div>
+      <button onclick="clearAllBookings()" style="background:#fee2e2; color:var(--red); border:none; padding:0.45rem 1rem; border-radius:6px; font-size:0.82rem; font-weight:600; cursor:pointer;">Clear All</button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="bookings-table">
+        <thead>
+          <tr>
+            <th>Ref #</th>
+            <th>Customer</th>
+            <th>Car</th>
+            <th>Pick-up</th>
+            <th>Return</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="admin-bookings-body"></tbody>
+      </table>
+    </div>
+
+    <div class="section-header" style="margin-top:2.5rem;">
+      <div class="section-title" style="font-size:1.2rem;">Fleet Status</div>
+    </div>
+    <div class="cars-grid" id="admin-fleet"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ ABOUT PAGE ═══════════════════════ -->
+<div id="page-about" class="page">
+  <div style="background:var(--navy); padding: 4rem 2.5rem; color:var(--white); text-align:center;">
+    <h1 style="font-family:'Playfair Display',serif; font-size:2.5rem;">About DriveEase Sabah</h1>
+    <p style="color:rgba(255,255,255,0.65); max-width:560px; margin: 1rem auto 0; font-size:1.05rem;">A student project from Universiti Malaysia Sabah — making car rentals simple and accessible across Sabah & Labuan.</p>
+  </div>
+
+  <div class="section">
+    <!-- Team Section -->
+    <div style="background:var(--white); border-radius:var(--radius); padding:2.5rem; box-shadow:var(--shadow); margin-bottom:2rem;">
+      <div class="section-title" style="margin-bottom:2rem;">Our Team</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1.5rem;">
+        
+        <div style="border:1.5px solid var(--gray-200); border-radius:var(--radius); padding:1.5rem; text-align:center;">
+          <div style="width:80px; height:80px; background:linear-gradient(135deg, #003d7a, #e8a020); border-radius:50%; margin:0 auto 1rem; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:2rem;">MP</div>
+          <div style="font-weight:700; color:var(--navy); font-size:0.95rem; margin-bottom:0.25rem;">Marconi Peres Anak Labang</div>
+          <div style="font-size:0.78rem; color:var(--gray-400); margin-bottom:0.75rem;">Student ID: BI25110125</div>
+          <div style="font-size:0.8rem; color:var(--gray-600);">Team Contributor</div>
+        </div>
+
+        <div style="border:1.5px solid var(--gray-200); border-radius:var(--radius); padding:1.5rem; text-align:center;">
+          <div style="width:80px; height:80px; background:linear-gradient(135deg, #003d7a, #e8a020); border-radius:50%; margin:0 auto 1rem; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:2rem;">RB</div>
+          <div style="font-weight:700; color:var(--navy); font-size:0.95rem; margin-bottom:0.25rem;">Roddick Balai Anak Kasi</div>
+          <div style="font-size:0.78rem; color:var(--gray-400); margin-bottom:0.75rem;">Student ID: BI25110174</div>
+          <div style="font-size:0.8rem; color:var(--gray-600);">Team Contributor</div>
+        </div>
+
+        <div style="border:1.5px solid var(--gray-200); border-radius:var(--radius); padding:1.5rem; text-align:center;">
+          <div style="width:80px; height:80px; background:linear-gradient(135deg, #003d7a, #e8a020); border-radius:50%; margin:0 auto 1rem; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:2rem;">AN</div>
+          <div style="font-weight:700; color:var(--navy); font-size:0.95rem; margin-bottom:0.25rem;">Akeef Nuqman Bin Shamsul Khamar</div>
+          <div style="font-size:0.78rem; color:var(--gray-400); margin-bottom:0.75rem;">Student ID: BI25110444</div>
+          <div style="font-size:0.8rem; color:var(--gray-600);">Team Contributor</div>
+        </div>
+
+        <div style="border:1.5px solid var(--gray-200); border-radius:var(--radius); padding:1.5rem; text-align:center;">
+          <div style="width:80px; height:80px; background:linear-gradient(135deg, #003d7a, #e8a020); border-radius:50%; margin:0 auto 1rem; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:2rem;">JJ</div>
+          <div style="font-weight:700; color:var(--navy); font-size:0.95rem; margin-bottom:0.25rem;">Joewe Jeffreader Johan</div>
+          <div style="font-size:0.78rem; color:var(--gray-400); margin-bottom:0.75rem;">Student ID: BI25110497</div>
+          <div style="font-size:0.8rem; color:var(--gray-600);">Team Contributor</div>
+        </div>
+
+        <div style="border:1.5px solid var(--gray-200); border-radius:var(--radius); padding:1.5rem; text-align:center;">
+          <div style="width:80px; height:80px; background:linear-gradient(135deg, #003d7a, #e8a020); border-radius:50%; margin:0 auto 1rem; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:2rem;">MS</div>
+          <div style="font-weight:700; color:var(--navy); font-size:0.95rem; margin-bottom:0.25rem;">Muhammad Safwan Bin Anas</div>
+          <div style="font-size:0.78rem; color:var(--gray-400); margin-bottom:0.75rem;">Student ID: BI25160577</div>
+          <div style="font-size:0.8rem; color:var(--gray-600);">Team Contributor</div>
+        </div>
+
+        <div style="border:1.5px solid var(--gray-200); border-radius:var(--radius); padding:1.5rem; text-align:center;">
+          <div style="width:80px; height:80px; background:linear-gradient(135deg, #003d7a, #e8a020); border-radius:50%; margin:0 auto 1rem; display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size:2rem;">MA</div>
+          <div style="font-weight:700; color:var(--navy); font-size:0.95rem; margin-bottom:0.25rem;">Mohammad Aiman Bin Mohd Taib</div>
+          <div style="font-size:0.78rem; color:var(--gray-400); margin-bottom:0.75rem;">Student ID: BI25160549</div>
+          <div style="font-size:0.8rem; color:var(--gray-600);">Team Contributor</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- How it works section -->
+    <div style="background:var(--white); border-radius:var(--radius); padding:2.5rem; box-shadow:var(--shadow); margin-bottom:2rem;">
+      <div class="section-title" style="margin-bottom:1.75rem;">How Renting Works</div>
+      <div class="how-grid">
+        <div class="how-card">
+          <div class="how-num">1</div>
+          <h3>Browse & Select</h3>
+          <p>Filter by type, price, or date. View full specs, images, and pricing before committing.</p>
+        </div>
+        <div class="how-card">
+          <div class="how-num">2</div>
+          <h3>Book Online</h3>
+          <p>Fill in your details, choose add-ons, and confirm. No upfront payment — pay at pick-up.</p>
+        </div>
+        <div class="how-card">
+          <div class="how-num">3</div>
+          <h3>Pick Up & Drive</h3>
+          <p>Bring your booking reference, IC, and licence. Our team gets you on the road in under 15 minutes.</p>
+        </div>
+        <div class="how-card">
+          <div class="how-num">4</div>
+          <h3>Return Anywhere</h3>
+          <p>Drop the car at any of our 5 branches. One-way rentals available with advance notice.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Locations section -->
+    <div style="background:var(--white); border-radius:var(--radius); padding:2.5rem; box-shadow:var(--shadow);">
+      <div class="section-title" style="margin-bottom:1.5rem;">Our Locations in Sabah & Labuan</div>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem;">
+        <div style="padding:1rem; border:1px solid var(--gray-200); border-radius:var(--radius-sm); text-align:center;">
+          <div style="font-size:1.5rem; margin-bottom:0.5rem;">📍</div>
+          <div style="font-weight:600; color:var(--navy); margin-bottom:0.25rem;">Kota Kinabalu</div>
+          <div style="font-size:0.78rem; color:var(--gray-400);">City Centre Branch</div>
+        </div>
+        <div style="padding:1rem; border:1px solid var(--gray-200); border-radius:var(--radius-sm); text-align:center;">
+          <div style="font-size:1.5rem; margin-bottom:0.5rem;">📍</div>
+          <div style="font-weight:600; color:var(--navy); margin-bottom:0.25rem;">Sandakan</div>
+          <div style="font-size:0.78rem; color:var(--gray-400);">East Sabah Branch</div>
+        </div>
+        <div style="padding:1rem; border:1px solid var(--gray-200); border-radius:var(--radius-sm); text-align:center;">
+          <div style="font-size:1.5rem; margin-bottom:0.5rem;">📍</div>
+          <div style="font-weight:600; color:var(--navy); margin-bottom:0.25rem;">Tawau</div>
+          <div style="font-size:0.78rem; color:var(--gray-400);">Southeast Sabah</div>
+        </div>
+        <div style="padding:1rem; border:1px solid var(--gray-200); border-radius:var(--radius-sm); text-align:center;">
+          <div style="font-size:1.5rem; margin-bottom:0.5rem;">📍</div>
+          <div style="font-weight:600; color:var(--navy); margin-bottom:0.25rem;">Lahad Datu</div>
+          <div style="font-size:0.78rem; color:var(--gray-400);">Remote Branch</div>
+        </div>
+        <div style="padding:1rem; border:1px solid var(--gray-200); border-radius:var(--radius-sm); text-align:center;">
+          <div style="font-size:1.5rem; margin-bottom:0.5rem;">📍</div>
+          <div style="font-weight:600; color:var(--navy); margin-bottom:0.25rem;">Labuan</div>
+          <div style="font-size:0.78rem; color:var(--gray-400);">Federal Territory</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <strong>DriveEase Car Rental System</strong> — A student project by Universiti Malaysia Sabah &nbsp;|&nbsp; &copy; 2025 DriveEase Sabah & Labuan
+</footer>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay hidden" id="success-modal">
+  <div class="modal">
+    <div class="success-icon">🎉</div>
+    <div class="success-msg">
+      <h2>Booking Confirmed!</h2>
+      <p>Your rental has been successfully booked. Show the reference number at pick-up.</p>
+      <div class="booking-ref">
+        <div style="font-size:0.75rem; color:var(--gray-400); margin-bottom:0.25rem;">Booking Reference</div>
+        <div class="ref" id="booking-ref-number">—</div>
+      </div>
+      <p style="font-size:0.8rem; color:var(--gray-400);">A confirmation will be sent to your email.</p>
+    </div>
+    <button class="btn-primary" onclick="closeModal()" style="width:100%; margin-top:1.25rem; text-align:center;">View My Bookings</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────
+const CARS = [
+  { id: 1, name: 'Perodua Axia', type: 'Economy', price: 65, emoji: '🚗', seats: 5, transmission: 'Auto', fuel: 'Petrol', available: true },
+  { id: 2, name: 'Honda City', type: 'Sedan', price: 120, emoji: '🚙', seats: 5, transmission: 'Auto', fuel: 'Petrol', available: true },
+  { id: 3, name: 'Toyota Vios', type: 'Sedan', price: 110, emoji: '🚘', seats: 5, transmission: 'Auto', fuel: 'Petrol', available: true },
+  { id: 4, name: 'Toyota Rush', type: 'SUV', price: 185, emoji: '🛻', seats: 7, transmission: 'Auto', fuel: 'Petrol', available: true },
+  { id: 5, name: 'Honda HR-V', type: 'SUV', price: 200, emoji: '🚙', seats: 5, transmission: 'Auto', fuel: 'Petrol', available: false },
+  { id: 6, name: 'Mercedes C-Class', type: 'Luxury', price: 380, emoji: '🏎️', seats: 5, transmission: 'Auto', fuel: 'Petrol', available: true },
+  { id: 7, name: 'BMW 3 Series', type: 'Luxury', price: 420, emoji: '🏎️', seats: 5, transmission: 'Auto', fuel: 'Petrol', available: true },
+  { id: 8, name: 'Hyundai Starex', type: 'MPV', price: 250, emoji: '🚌', seats: 8, transmission: 'Auto', fuel: 'Diesel', available: true },
+  { id: 9, name: 'Toyota Alphard', type: 'MPV', price: 550, emoji: '🚐', seats: 7, transmission: 'Auto', fuel: 'Petrol', available: true },
+  { id: 10, name: 'Perodua Myvi', type: 'Economy', price: 75, emoji: '🚗', seats: 5, transmission: 'Auto', fuel: 'Petrol', available: true },
+  { id: 11, name: 'Honda Civic', type: 'Sedan', price: 145, emoji: '🚘', seats: 5, transmission: 'Auto', fuel: 'Petrol', available: false },
+  { id: 12, name: 'Mitsubishi Outlander', type: 'SUV', price: 230, emoji: '🛻', seats: 7, transmission: 'Auto', fuel: 'Petrol', available: true },
+];
+
+let bookings = JSON.parse(localStorage.getItem('driveease-bookings') || '[]');
+let selectedCar = null;
+
+// ─── HELPERS ────────────────────────────────────────────────────────
+function genRef() {
+  return 'DE-' + Date.now().toString(36).toUpperCase().slice(-6);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function saveBookings() {
+  localStorage.setItem('driveease-bookings', JSON.stringify(bookings));
+}
+
+function daysBetween(a, b) {
+  if (!a || !b) return 0;
+  const diff = new Date(b) - new Date(a);
+  return Math.max(0, Math.round(diff / 86400000));
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-MY', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+// ─── NAVIGATION ─────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.id === 'nav-' + id);
+  });
+  window.scrollTo(0, 0);
+  if (id === 'bookings') renderBookings();
+  if (id === 'admin') renderAdmin();
+  if (id === 'home') renderFeatured();
+  if (id === 'cars') renderAllCars();
+}
+
+// ─── RENDER CARS ────────────────────────────────────────────────────
+function carCardHTML(car, context='browse') {
+  const rented = bookings.some(b => b.carId === car.id && b.status === 'Active');
+  const isAvail = car.available && !rented;
+  return `
+    <div class="car-card">
+      <div class="car-img">
+        <div class="car-svg">${car.emoji}</div>
+        <div class="car-badge ${isAvail ? 'available' : 'rented'}">${isAvail ? 'Available' : 'Rented'}</div>
+      </div>
+      <div class="car-body">
+        <div class="car-name">${car.name}</div>
+        <div class="car-type">${car.type}</div>
+        <div class="car-specs">
+          <div class="spec"><span class="spec-icon">👥</span> ${car.seats} seats</div>
+          <div class="spec"><span class="spec-icon">⚙️</span> ${car.transmission}</div>
+          <div class="spec"><span class="spec-icon">⛽</span> ${car.fuel}</div>
+        </div>
+        <div class="car-footer">
+          <div class="car-price">
+            <span class="amount">RM${car.price}</span>
+            <span class="per"> /day</span>
+          </div>
+          <button class="rent-btn" ${!isAvail ? 'disabled' : ''} onclick="startBooking(${car.id})">
+            ${isAvail ? 'Rent Now' : 'Unavailable'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderFeatured() {
+  const featured = CARS.filter(c => c.available).slice(0, 3);
+  document.getElementById('featured-cars').innerHTML = featured.map(c => carCardHTML(c)).join('');
+}
+
+function renderAllCars(filter='All') {
+  const cars = filter === 'All' ? CARS : CARS.filter(c => c.type === filter);
+  document.getElementById('all-cars-grid').innerHTML = cars.map(c => carCardHTML(c)).join('');
+}
+
+function filterCars(type, btn) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAllCars(type);
+}
+
+// ─── BOOKING ────────────────────────────────────────────────────────
+function startBooking(carId) {
+  selectedCar = CARS.find(c => c.id === carId);
+  showPage('booking');
+  document.getElementById('b-car-emoji').textContent = selectedCar.emoji;
+  document.getElementById('b-car-name').textContent = selectedCar.name;
+  document.getElementById('b-car-type').textContent = selectedCar.type;
+  document.getElementById('b-rate').textContent = `RM${selectedCar.price}/day`;
+
+  const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  document.getElementById('b-pickup').value = today;
+  document.getElementById('b-return').value = tomorrow;
+  document.getElementById('b-pickup').addEventListener('change', updateSummary);
+  document.getElementById('b-return').addEventListener('change', updateSummary);
+  updateSummary();
+}
+
+function updateSummary() {
+  if (!selectedCar) return;
+  const pickup = document.getElementById('b-pickup').value;
+  const ret = document.getElementById('b-return').value;
+  const days = daysBetween(pickup, ret) || 1;
+  const gps = document.getElementById('addon-gps').checked ? 15 : 0;
+  const seat = document.getElementById('addon-seat').checked ? 20 : 0;
+  const ins = document.getElementById('addon-insurance').checked ? 35 : 0;
+  const addonsPerDay = gps + seat + ins;
+  const carCost = selectedCar.price * days;
+  const addonCost = addonsPerDay * days;
+  const tax = Math.round((carCost + addonCost) * 0.08);
+  const total = carCost + addonCost + tax;
+  document.getElementById('b-duration').textContent = days + ' day' + (days > 1 ? 's' : '');
+  document.getElementById('b-subtotal').textContent = 'RM' + carCost;
+  document.getElementById('b-addons').textContent = 'RM' + addonCost;
+  document.getElementById('b-tax').textContent = 'RM' + tax;
+  document.getElementById('b-total').textContent = 'RM' + total;
+}
+
+function confirmBooking() {
+  const fname = document.getElementById('b-fname').value.trim();
+  const lname = document.getElementById('b-lname').value.trim();
+  const email = document.getElementById('b-email').value.trim();
+  const phone = document.getElementById('b-phone').value.trim();
+  const pickup = document.getElementById('b-pickup').value;
+  const ret = document.getElementById('b-return').value;
+  if (!fname || !lname || !email || !phone || !pickup || !ret) {
+    showToast('⚠️ Please fill in all required fields'); return;
+  }
+  if (!selectedCar) { showToast('No car selected'); return; }
+  const days = daysBetween(pickup, ret) || 1;
+  const gps = document.getElementById('addon-gps').checked ? 15 : 0;
+  const seat = document.getElementById('addon-seat').checked ? 20 : 0;
+  const ins = document.getElementById('addon-insurance').checked ? 35 : 0;
+  const addonsPerDay = gps + seat + ins;
+  const carCost = selectedCar.price * days;
+  const addonCost = addonsPerDay * days;
+  const tax = Math.round((carCost + addonCost) * 0.08);
+  const total = carCost + addonCost + tax;
+  const ref = genRef();
+  bookings.push({
+    ref, carId: selectedCar.id, carName: selectedCar.name, carEmoji: selectedCar.emoji, carType: selectedCar.type,
+    customer: fname + ' ' + lname, email, phone,
+    pickup, return: ret, days, total, location: document.getElementById('b-location').value,
+    status: 'Active', createdAt: new Date().toISOString()
+  });
+  saveBookings();
+  document.getElementById('booking-ref-number').textContent = ref;
+  document.getElementById('success-modal').classList.remove('hidden');
+}
+
+function closeModal() {
+  document.getElementById('success-modal').classList.add('hidden');
+  showPage('bookings');
+}
+
+// ─── MY BOOKINGS ────────────────────────────────────────────────────
+function renderBookings() {
+  const tbody = document.getElementById('bookings-body');
+  const noMsg = document.getElementById('no-bookings');
+  if (!bookings.length) {
+    tbody.innerHTML = '';
+    noMsg.style.display = 'block';
+    return;
+  }
+  noMsg.style.display = 'none';
+  tbody.innerHTML = bookings.slice().reverse().map(b => `
+    <tr>
+      <td><strong>${b.ref}</strong></td>
+      <td>${b.carEmoji} ${b.carName}</td>
+      <td>${formatDate(b.pickup)}</td>
+      <td>${formatDate(b.return)}</td>
+      <td>${b.days}</td>
+      <td><strong>RM${b.total}</strong></td>
+      <td><span class="status-badge ${b.status.toLowerCase()}">${b.status}</span></td>
+      <td>
+        ${b.status === 'Active' ? `<button class="action-btn cancel" onclick="cancelBooking('${b.ref}')">Cancel</button>` : ''}
+      </td>
+    </tr>`).join('');
+}
+
+function cancelBooking(ref) {
+  const b = bookings.find(x => x.ref === ref);
+  if (b) { b.status = 'Cancelled'; saveBookings(); renderBookings(); showToast('Booking cancelled'); }
+}
+
+// ─── ADMIN ──────────────────────────────────────────────────────────
+function renderAdmin() {
+  const total = bookings.length;
+  const active = bookings.filter(b => b.status === 'Active').length;
+  const revenue = bookings.filter(b => b.status !== 'Cancelled').reduce((s, b) => s + b.total, 0);
+  const cancelled = bookings.filter(b => b.status === 'Cancelled').length;
+  document.getElementById('admin-stats').innerHTML = `
+    <div class="admin-stat"><div class="label">Total Bookings</div><div class="value">${total}</div><div class="sub">Sabah & Labuan</div></div>
+    <div class="admin-stat"><div class="label">Active Rentals</div><div class="value">${active}</div><div class="sub">Currently out</div></div>
+    <div class="admin-stat"><div class="label">Total Revenue</div><div class="value">RM${revenue.toLocaleString()}</div><div class="sub">Excl. cancelled</div></div>
+    <div class="admin-stat"><div class="label">Cancelled</div><div class="value">${cancelled}</div><div class="sub">${total ? Math.round(cancelled/total*100) : 0}% rate</div></div>`;
+
+  const tbody = document.getElementById('admin-bookings-body');
+  if (!bookings.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--gray-400);">No bookings yet</td></tr>'; }
+  else {
+    tbody.innerHTML = bookings.slice().reverse().map(b => `
+      <tr>
+        <td><strong>${b.ref}</strong></td>
+        <td>${b.customer}</td>
+        <td>${b.carEmoji} ${b.carName}</td>
+        <td>${formatDate(b.pickup)}</td>
+        <td>${formatDate(b.return)}</td>
+        <td>RM${b.total}</td>
+        <td><span class="status-badge ${b.status.toLowerCase()}">${b.status}</span></td>
+        <td>
+          ${b.status === 'Active' ? `<button class="action-btn cancel" onclick="adminCancel('${b.ref}')">Cancel</button>` : '—'}
+        </td>
+      </tr>`).join('');
+  }
+  document.getElementById('admin-fleet').innerHTML = CARS.map(c => carCardHTML(c, 'admin')).join('');
+}
+
+function adminCancel(ref) {
+  const b = bookings.find(x => x.ref === ref);
+  if (b) { b.status = 'Cancelled'; saveBookings(); renderAdmin(); showToast('Booking cancelled by admin'); }
+}
+
+function clearAllBookings() {
+  if (!confirm('Clear all booking records?')) return;
+  bookings = [];
+  saveBookings();
+  renderAdmin();
+  showToast('All bookings cleared');
+}
+
+// ─── SEARCH ─────────────────────────────────────────────────────────
+function handleSearch() {
+  const type = document.getElementById('hs-type').value;
+  showPage('cars');
+  setTimeout(() => {
+    if (type) {
+      const btn = [...document.querySelectorAll('.cat-btn')].find(b => b.textContent === type);
+      if (btn) filterCars(type, btn);
+    }
+  }, 100);
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────
+renderFeatured();
+</script>
+</body>
+</html>
